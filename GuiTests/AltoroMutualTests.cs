@@ -15,16 +15,16 @@ namespace Structura.GuiTests
     [TestFixture]
     public class AltoroMutualTests
     {
-        private IWebDriver _driver;
-        private StringBuilder _verificationErrors;
-        private string _baseUrl;
+        private IWebDriver driver;
+        private StringBuilder verificationErrors;
+        private string baseUrl;
 
         [SetUp]
         public void SetupTest()
         {
-            _driver = new DriverFactory().Create();
-            _baseUrl = ConfigurationHelper.Get<string>("TargetUrl");
-            _verificationErrors = new StringBuilder();
+            driver = new DriverFactory().Create();
+            baseUrl = ConfigurationHelper.Get<string>("TargetUrl");
+            verificationErrors = new StringBuilder();
         }
 
         [TearDown]
@@ -32,14 +32,14 @@ namespace Structura.GuiTests
         {
             try
             {
-                _driver.Quit();
-                _driver.Close();
+                driver.Quit();
+                driver.Close();
             }
             catch (Exception)
             {
                 // Ignore errors if we are unable to close the browser
             }
-            _verificationErrors.ToString().Should().BeEmpty("No verification errors are expected.");
+            verificationErrors.ToString().Should().BeEmpty("No verification errors are expected.");
         }
 
         [Test]
@@ -47,10 +47,10 @@ namespace Structura.GuiTests
         {
             // Arrange
             // Act
-            new LoginPage(_driver).LoginAsAdmin(_baseUrl);
+            new LoginPage(driver).LoginAsAdmin(baseUrl);
 
             // Assert
-            new MainPage(_driver).GetAccountButton.Displayed.Should().BeTrue();
+            new MainPage(driver).GetAccountButton.Displayed.Should().BeTrue();
         }
 
         [Test]
@@ -58,12 +58,12 @@ namespace Structura.GuiTests
         {
             // Arrange
             // Act
-            new LoginPage(_driver).LoginAsNobody(_baseUrl);
+            new LoginPage(driver).LoginAsNobody(baseUrl);
 
             // Assert
             Action a = () =>
             {
-                var displayed = new MainPage(_driver).GetAccountButton.Displayed; // throws exception if not found
+                var displayed = new MainPage(driver).GetAccountButton.Displayed; // throws exception if not found
             };
             a.ShouldThrow<NoSuchElementException>().WithMessage("Could not find element by: By.Id: btnGetAccount");
         }
@@ -72,9 +72,9 @@ namespace Structura.GuiTests
         public void RequestGoldenVisaShouldBeAccepted()
         {
             // Arrange
-            new LoginPage(_driver).LoginAsAdmin(_baseUrl);
-            var page = new RequestGoldVisaPage(_driver);
-            new MainPage(_driver).NavigateToTransferFunds();
+            new LoginPage(driver).LoginAsAdmin(baseUrl);
+            var page = new RequestGoldVisaPage(driver);
+            new MainPage(driver).NavigateToTransferFunds();
 
             // Act
             page.PerformRequest();
